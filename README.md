@@ -144,4 +144,4 @@ Do not use this version to store sensitive, real-world passwords until appropria
 
 ## License
 
-No license has been specified yet. Add a license file if you intend to publish the project under an open-source license.
+No license has been specified yet.
