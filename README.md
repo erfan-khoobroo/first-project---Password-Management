@@ -36,10 +36,10 @@ A command-line password manager built with Python for organizing account credent
 3. Run the application:
 
    ```bash
-   python main.py
+   python project.py
    ```
 
-   Replace `main.py` with the name of your Python entry-point file if necessary.
+   Replace `project.py` with the name of your Python entry-point file if necessary.
 
 ## Usage
 
@@ -120,7 +120,7 @@ password-manager/
 └── *.csv
 ```
 
-* `main.py`: Main program, menu handling, and application logic.
+* `project.py`: Main program, menu handling, and application logic.
 * `README.md`: Project documentation.
 * `*.csv`: Category files containing account records.
 
@@ -144,4 +144,4 @@ Do not use this version to store sensitive, real-world passwords until appropria
 
 ## License
 
-No license has been specified yet. Add a license file if you intend to publish the project under an open-source license.
+No license has been specified yet.
