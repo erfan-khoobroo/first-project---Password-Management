@@ -36,7 +36,7 @@ A command-line password manager built with Python for organizing account credent
 3. Run the application:
 
    ```bash
-   python main.py
+   python project.py
    ```
 
    Replace `main.py` with the name of your Python entry-point file if necessary.
