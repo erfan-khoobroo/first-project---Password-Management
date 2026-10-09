@@ -39,7 +39,7 @@ A command-line password manager built with Python for organizing account credent
    python project.py
    ```
 
-   Replace `main.py` with the name of your Python entry-point file if necessary.
+   Replace `project.py` with the name of your Python entry-point file if necessary.
 
 ## Usage
 
