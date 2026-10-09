@@ -6,7 +6,7 @@ import string
 import secrets
 
 class CsvFile:
-    def __init__(self, name_file:str ,dir_file:str = Path.cwd()):
+    def __init__(self, name_file:str ,dir_file = Path.cwd()):
         self.name_file = name_file + f"{'' if name_file.endswith('.csv') else '.csv'}"
         self.dir_file = dir_verify(dir_file)
         self.path_file = Path(self.dir_file) / self.name_file
@@ -41,7 +41,7 @@ class CsvFile:
         try:
             with open(self.path_file,"x",newline="") as f:
                 writer = csv.writer(f)
-                writer.writerow(["web/app", "username", "email", "password"])
+                writer.writerow(["web/app", "email", "username", "password"])
             print(f"\n{self.name_file} ---- created ---->> " 
                 f"{'by defulte(the program execution path)'if self.dir_file =='.' else self.dir_file}✅")
             return True
@@ -53,8 +53,8 @@ class CsvFile:
         with open(self.path_file,"a",newline="") as f:
             writer = csv.writer(f)
             web = input("website/app: ").strip()
-            username = input("username: ").strip()
             email = input("email: ").strip()
+            username = input("username: ").strip()
             while 1 :
                 if y_or_n(x := input("Do you want to use the password generator tool❓(y/n):")):
                     password = get_pass()
@@ -69,6 +69,60 @@ class CsvFile:
             writer.writerow([web, email, username, password])
             print(f"\nSuccessfully added to {self.name_file} ✅\n")
             return True
+        
+    def search(self):
+        files = self.all_cat(self.dir_file)
+        if not files:
+            print("❌ No CSV files found in this directory.")
+            return
+        web = input("Website/App (press Enter to skip): ").strip()
+        username = input("Username (press Enter to skip): ").strip()
+        email = input("Email (press Enter to skip): ").strip()
+
+        criteria = {
+            0: web.casefold(),
+            1: email.casefold(),
+            2: username.casefold()}
+        criteria = {column: value for column, value in criteria.items() if value}
+
+        if not criteria:
+            print("❌ Please enter at least one search criterion.")
+            return
+
+        results = []
+        for file in files:
+            try:
+                with open(file, "r", newline="", encoding="utf-8") as f:
+                    reader = csv.reader(f)
+                    next(reader, None)  # Skip header
+
+                    for row in reader:
+                        if len(row) < 4:
+                            continue
+
+                        if all(value in row[column].casefold() for column, value in criteria.items()):
+                            results.append((file.name, row))
+
+            except (OSError, csv.Error) as e:
+                print(f"❌ Could not read {file.name}: {e}")
+
+        if not results:
+            print("No matching accounts found.")
+            return
+
+        print(f"\nFound {len(results)} matching account(s):\n")
+
+        for filename, row in results:
+            web, username, email, password = row
+
+            print(
+                f"Category: {filename}\n"
+                f"Website/App: {web}\n"
+                f"Username: {username}\n"
+                f"Email: {email}\n"
+                f"Password: {password}\n"
+                "--------------------------------"
+            )
 
 class PassGen:
     def __init__(self, difficulty_level = 2 , pass_length = 8):
@@ -102,7 +156,7 @@ home_options = [
 "\n1.View or create account and password categories.",
 "2.Add account-password",
 "3.Password generation",
-"4.Search",
+"4.Search this directory",
 "5.Change directory",
 "6.Exit\n"
 ]
