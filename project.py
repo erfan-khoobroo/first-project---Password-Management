@@ -1,4 +1,4 @@
-# from tabulate import tabulate #pizza.py
+from tabulate import tabulate
 from pathlib import Path
 import csv
 import sys
@@ -13,20 +13,15 @@ class CsvFile:
 
     def __str__(self):
         try:
-            with open(self.path_file,"r") as f:
+            with open(self.path_file,"r", encoding="utf-8") as f:
                 lines = f.readlines()
                 reader = csv.reader(lines)
             if len(reader := list(reader)) <= 1:
                 return "You haven't added an account yet⚠️"
-            result = ""
-            for web_app , user_name , email , password in reader[1:]:
-                result += (
-                f"Website/App: {web_app}, "
-                f"user name: '{user_name}', "
-                f"Email: {email}, "
-                f"password: '{password}'\n"
-                )
-            return result
+            result = []
+            for web_app , email, user_name , password in reader:
+                result.append([web_app, email, user_name, password])
+            return tabulate(result[1:], headers = result[0], tablefmt="grid")
         except (OSError, csv.Error):
             print("❌Error reading file")
             return ""
@@ -39,7 +34,7 @@ class CsvFile:
 
     def create_cat(self):
         try:
-            with open(self.path_file,"x",newline="") as f:
+            with open(self.path_file,"x",newline="", encoding="utf-8") as f:
                 writer = csv.writer(f)
                 writer.writerow(["web/app", "email", "username", "password"])
             print(f"\n{self.name_file} ---- created ---->> " 
@@ -50,7 +45,7 @@ class CsvFile:
             return False
 
     def add_data_to_cat(self):
-        with open(self.path_file,"a",newline="") as f:
+        with open(self.path_file,"a",newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             web = input("website/app: ").strip()
             email = input("email: ").strip()
@@ -60,7 +55,7 @@ class CsvFile:
                     password = get_pass()
                     print(f"your password : '{password}'")
                     break
-                elif x.lower not in ["yes", "y" , "no", "n"]:
+                elif x.lower() not in ["yes", "y" , "no", "n"]:
                     print(f"❌Invalid '{x}' input; please try again.\n")
                     continue
                 else:
@@ -70,11 +65,12 @@ class CsvFile:
             print(f"\nSuccessfully added to {self.name_file} ✅\n")
             return True
         
-    def search(self):
-        files = self.all_cat(self.dir_file)
+    @staticmethod
+    def search(dir_file = Path.cwd()):
+        files = CsvFile.all_cat(dir_file)
         if not files:
             print("❌ No CSV files found in this directory.")
-            return
+            return False
         web = input("Website/App (press Enter to skip): ").strip()
         username = input("Username (press Enter to skip): ").strip()
         email = input("Email (press Enter to skip): ").strip()
@@ -87,7 +83,7 @@ class CsvFile:
 
         if not criteria:
             print("❌ Please enter at least one search criterion.")
-            return
+            return False
 
         results = []
         for file in files:
@@ -97,7 +93,8 @@ class CsvFile:
                     next(reader, None)  # Skip header
 
                     for row in reader:
-                        if len(row) < 4:
+                        if len(row) != 4:
+                            print(f"Value count error : {row}")
                             continue
 
                         if all(value in row[column].casefold() for column, value in criteria.items()):
@@ -108,21 +105,17 @@ class CsvFile:
 
         if not results:
             print("No matching accounts found.")
-            return
+            return False
 
         print(f"\nFound {len(results)} matching account(s):\n")
-
+        
+        res=[]
         for filename, row in results:
-            web, username, email, password = row
-
-            print(
-                f"Category: {filename}\n"
-                f"Website/App: {web}\n"
-                f"Username: {username}\n"
-                f"Email: {email}\n"
-                f"Password: {password}\n"
-                "--------------------------------"
-            )
+            web, email, username, password = row
+            res.append([Path(filename).stem, web, email, username, password])
+        print(tabulate(res, headers =["Category", "Web/App", "Email", "User Name", "Password"] , tablefmt="grid"))                
+            
+        return True
 
 class PassGen:
     def __init__(self, difficulty_level = 2 , pass_length = 8):
@@ -181,7 +174,7 @@ def main():
                         password = get_pass()
                         print(f"your password : '{password}'")
                     case "4":
-                        ...
+                        CsvFile.search(select_dir)
                     case "5":
                         print("\n***📁change directory***")
                         select_dir = input("(The default is the application's execution path): ").strip()
@@ -199,7 +192,7 @@ def main():
 def select_home_options(options):
     while 1:
         try:
-            entry = int(x := input("What do you want to do❓\n 📋Please make a selection: "))
+            entry = int(x := input("What do you want to do❓\n 📋Please make a selection: ").strip())
             if 1 <= entry <= len(options):
                 return x
             else :
@@ -212,7 +205,7 @@ def vc_cat(select_dir):
     files = CsvFile.all_cat(select_dir)
     for i, file in enumerate(files , 1):
         print(f"{i}. {file.name}")
-    select_cat = input(f"{i+1 if files else "1"}. Creating a new category at this same path ...\n\n📋Select an option: ")
+    select_cat = input(f"{i+1 if files else "1"}. Creating a new category at this same path ...\n\n📋Select an option: ").strip()
     try:
         select_cat = int(select_cat)
         if 1 <= select_cat <= len(files) :
@@ -223,7 +216,7 @@ def vc_cat(select_dir):
             if y_or_n(answer):
                 new_file.add_data_to_cat()
         elif select_cat == len(files) + 1 :
-            new_file = CsvFile(input("📋Enter the name of your new category: "), select_dir)
+            new_file = CsvFile(input("📋Enter the name of your new category: ").strip(), select_dir)
             if new_file.create_cat():
                 answer = input("Do you want to add an account and password to this category❓(y/n):").strip()
                 if y_or_n(answer):
@@ -242,7 +235,7 @@ def add_ap(select_dir):
         menu += f"{i}. {file.name}\n"
     while 1:
         print(menu)
-        select_cat = input("\n📋Enter the number of the desired category: ")
+        select_cat = input("\n📋Enter the number of the desired category: ").strip()
         try:
             select_cat = int(select_cat)
             if 1 <= select_cat <= len(files):
@@ -276,17 +269,18 @@ def add_ap(select_dir):
 def get_pass():
     levels = ["easy", "normal", "hard"]
     while 1:
-        info ="""Easy : num + lowercase latters
-        Normal : num + lowercase latters + uppercase latters
-        Hard : num + lowercase latters + lowercase latters + symbols\n
-        """
+        info ="\nEasy : num + lowercase latters\nNormal : num + lowercase latters + uppercase latters\nHard : num + lowercase latters + uppercase latters + symbols\n"
         print(info)
         level = input("What level should your password be❓\n(Easy/Normal/Hard):").strip().lower()
         if level in levels:
             while 1 :
                 try:
                     length = int(x := input("How many characters should your password have?❓").strip().lower())
-                    break
+                    if length > 0:
+                        break
+                    else:
+                        print(f"❌Invalid '{x}' input; please try again.")
+                        continue
                 except ValueError :
                     print(f"❌Invalid '{x}' input; please try again.")
                     continue
