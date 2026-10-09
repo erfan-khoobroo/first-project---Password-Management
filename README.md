@@ -120,7 +120,7 @@ password-manager/
 └── *.csv
 ```
 
-* `main.py`: Main program, menu handling, and application logic.
+* `project.py`: Main program, menu handling, and application logic.
 * `README.md`: Project documentation.
 * `*.csv`: Category files containing account records.
 
