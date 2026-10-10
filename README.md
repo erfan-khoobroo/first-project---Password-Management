@@ -1,6 +1,6 @@
 # Password Management CLI
 
-<!-- #### Video Demo: <video URL> -->
+#### Video Demo: https://youtu.be/PIRk_ZOnX1o?si=SLxKnKyPwCPGkAvV
 
 ### Description
 
