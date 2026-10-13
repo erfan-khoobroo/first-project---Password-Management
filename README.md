@@ -1,6 +1,7 @@
 # Password Management CLI
 
-#### Video Demo: https://youtu.be/PIRk_ZOnX1o?si=SLxKnKyPwCPGkAvV
+#### Video Demo(Youtube): https://youtu.be/PIRk_ZOnX1o?si=SLxKnKyPwCPGkAvV
+#### Video Demo(instagram): [https://youtu.be/PIRk_ZOnX1o?si=SLxKnKyPwCPGkAvV](https://www.instagram.com/reel/DeU413sumK0/?exln=MXc2dnRuMTZ2cmo3cQ==)
 
 ### Description
 
